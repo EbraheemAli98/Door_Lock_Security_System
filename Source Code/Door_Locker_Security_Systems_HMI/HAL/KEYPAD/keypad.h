@@ -14,7 +14,7 @@
 #ifndef KEYPAD_H_
 #define KEYPAD_H_
 
-#include "../../HELPERS/Std_types.h"
+#include "../../LIBRARIES/Std_types.h"
 
 /************************************************************************
  * 							Definitions

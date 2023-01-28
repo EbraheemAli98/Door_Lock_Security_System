@@ -25,7 +25,9 @@
 #define LOGIC_HIGH	(1u)
 #define LOGIC_LOW	(0u)
 
+#ifndef NULL_PTR
 #define NULL_PTR	((void*)0)
+#endif
 
 typedef unsigned char	bool;
 

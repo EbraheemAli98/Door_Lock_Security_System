@@ -13,7 +13,7 @@
 #ifndef MCAL_GPIO_GPIO_H_
 #define MCAL_GPIO_GPIO_H_
 
-#include "../../HELPERS/Std_types.h"
+#include "../../LIBRARIES/Std_types.h"
 
 /*******************************************************************************
  *                                Definitions                                  *

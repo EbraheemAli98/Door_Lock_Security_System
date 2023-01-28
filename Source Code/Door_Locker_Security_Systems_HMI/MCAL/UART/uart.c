@@ -10,11 +10,12 @@
  [DESCRIPTION]: This file contain the Functions' definitions
  -------------------------------------------------------------------------------*/
 
-#include "../../HELPERS/comman_macros.h"
 #include <avr/io.h>
 #include "uart.h"
 
 #include <util/delay.h>
+
+#include "../../LIBRARIES/comman_macros.h"
 void UART_init(UART_ConfigType* uart_config)
 {
 	uint16 ubrr_value = 0;
@@ -59,7 +60,7 @@ void UART_init(UART_ConfigType* uart_config)
 void UART_sendByte(uint8 a_data)
 {
 	/*
-	 *  Poll until the USART data register empty flag is, to make sure the UDR has empty now and ready to transmit
+	 *  Poll until the USART data register empty flag is 1, to make sure the UDR has empty now and ready to transmit
 	 *  a new data.
 	 * The flag is cleared automatically when the receive buffer is empty.
 	 */
@@ -83,6 +84,7 @@ uint8 UART_receiveByte(void)
 	return UDR;
 }
 
+#if 0
 void sendString(uint8 *a_Str)
 {
 	while(*a_Str != '\0')
@@ -110,7 +112,9 @@ void UART_receiveString(uint8* a_Str)
 	a_Str[i] = '\0';
 
 }
+#endif
 
+#if 0
 void UART_sendPassword(uint8 *password)
 {
 	uint8 i;
@@ -129,3 +133,4 @@ void UART_receivePassword(uint8 *password)
 		password[i] = UART_receiveByte();
 	}
 }
+#endif

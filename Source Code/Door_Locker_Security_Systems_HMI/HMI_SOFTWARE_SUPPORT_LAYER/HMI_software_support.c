@@ -15,7 +15,7 @@
 #include "../HAL/KEYPAD/keypad.h"
 #include "../HAL/LCD/lcd.h"
 #include <util/delay.h>
-
+#include "../MCAL/GPT/Gpt.h"
 /***********************************************************************************************
 							 	 	 Global Variables
  ***********************************************************************************************/
@@ -25,8 +25,7 @@
  * [T1_ConfigObj]: variable of type object from a structure stores the Timer configuartions.
  -------------------------------------------------------------------------------------------*/
 
-volatile uint32 g_seconds = 0;
-static TIMER_configType T1_ConfigObj;
+volatile uint8 g_seconds = 0;
 
 
 /*************************************************************************************************
@@ -34,7 +33,7 @@ static TIMER_configType T1_ConfigObj;
  *************************************************************************************************/
 
 /*==================================== HMI_init ===============================================*/
-void HMI_init(void)
+void HMI_Init(void)
 {
 	/********************************************************************************************
 	 * 1. initiate the timer configuration:timer1,compare-mode,prescaler_1024.
@@ -42,15 +41,18 @@ void HMI_init(void)
 	 * 3. initiate LCD.
 	 * 4. set the uart configuration: 9600 baud-rate, one stop bit, 8bits-data,and no parity bit.
 	 ********************************************************************************************/
-	T1_ConfigObj.mode = CTC;
-	T1_ConfigObj.TimerInitValue = 0;
-	T1_ConfigObj.TimerCompValue = 7811;
-	T1_ConfigObj.prescaler = PRESCALER_1024;
-	TIMER1_init(&T1_ConfigObj);
-	TIMER1_setCallBack(HMI_callBack);
+//	TIMER_configType T1_ConfigObj;
+//	T1_ConfigObj.mode = CTC;
+//	T1_ConfigObj.TimerInitValue = 0;
+//	T1_ConfigObj.TimerCompValue = 7811;
+//	T1_ConfigObj.prescaler = PRESCALER_1024;
+//	TIMER1_init(&T1_ConfigObj);
+	GPT_startTimer(T1);
+	GPT_T1_setCallBack(HMI_callBack);
 	LCD_init();
 	UART_ConfigType uart_configObj = {9600,EIGHT_BITS,DISABLE_PARITY,ONE_STOP_BIT};
 	UART_init(&uart_configObj);
+	GPT_enableNotification(T1, OUTPUT_COMPARE);
 }
 
 /*==================================== get_password ============================================*/
@@ -109,7 +111,7 @@ void HMI_enterConfirmPassword(void)
 /*================================= displayChecknessResult =======================================*/
 void HMI_passwordInputOperation(void)
 {
-	uint8 temp = 0;
+	uint8 a_password = 0;
 	/******************************************************************************************************
 	 * 1. Take the password from user and send it to the control ECU.
 	 * 2. clear the screen.
@@ -138,26 +140,45 @@ void HMI_passwordInputOperation(void)
 			HMI_enterConfirmPassword();
 			LCD_clearScreen();
 			HMI_receiveACK();
-			temp = UART_receiveByte();
-
-			if(temp == MATCHED)
+			a_password = UART_receiveByte();
+			switch(a_password)
 			{
+			case MATCHED:
 				LCD_clearScreen();
 				LCD_displayStringRowColumn(0, 5, "MATCHED");
 				LCD_displayStringRowColumn(1, 2, "Password Saved");
 				_delay_ms(500);
 				LCD_clearScreen();
-			}
-			else
-			{
+				break;
+			case MISMATCHED:
 				LCD_clearScreen();
 				LCD_moveCursor(0, 3);
 				LCD_displayString("MISMATCHED");
 				LCD_displayStringRowColumn(1, 3, "TRY AGAIN");
 				_delay_ms(500);
 				LCD_clearScreen();
+				break;
+			default:
+				break;
 			}
-		}while(temp == MISMATCHED);
+//			if(a_password == MATCHED)
+//			{
+//				LCD_clearScreen();
+//				LCD_displayStringRowColumn(0, 5, "MATCHED");
+//				LCD_displayStringRowColumn(1, 2, "Password Saved");
+//				_delay_ms(500);
+//				LCD_clearScreen();
+//			}
+//			else
+//			{
+//				LCD_clearScreen();
+//				LCD_moveCursor(0, 3);
+//				LCD_displayString("MISMATCHED");
+//				LCD_displayStringRowColumn(1, 3, "TRY AGAIN");
+//				_delay_ms(500);
+//				LCD_clearScreen();
+//			}
+		}while(a_password == MISMATCHED);
 }
 /*==================================== HMI_getChosenOption ================================*/
 uint8 HMI_getChosenOption(void)
@@ -165,7 +186,8 @@ uint8 HMI_getChosenOption(void)
 	uint8 a_option = 0;
 	do
 	{
-		HMI_displayOptionMenu();
+		LCD_displayString("+:Open Door");
+		LCD_displayStringRowColumn(1, 0, "-:Change Pass");
 		a_option = KEYPAD_getPressedKey();
 	}while((a_option != OPEN_DOOR_OPTION && a_option != CHANGE_PASSWORD_OPTION));
 	return a_option;
@@ -191,11 +213,13 @@ void HMI_readPassword(uint8 *a_password)
 	}
 }
 /*==================================== displayOptionMenu =======================================*/
+#if DISABLE
 void HMI_displayOptionMenu(void)
 {
 	LCD_displayString("+:Open Door");
 	LCD_displayStringRowColumn(1, 0, "-:Change Pass");
 }
+#endif
 /*======================================== Door_action ==========================================*/
 void HMI_displayDoorAction(void)
 {
@@ -260,7 +284,7 @@ void HMI_displayAlarmAction(void)
 /*======================================== HMI_openDoorCheckPassword =====================================*/
 void HMI_openDoorWrongPassword(uint8 *a_NumberOfWrongPasswords)
 {
-	uint8 a_verification_message = 0;
+	//uint8 a_verification_message = 0;
 	/***********************************************************************************************
 	 * 1. increment the number of wrong passwords by 1.
 	 * 2. clear the screen.
@@ -292,8 +316,8 @@ void HMI_openDoorWrongPassword(uint8 *a_NumberOfWrongPasswords)
 	/* check if CONTROL ECU had finished its task and ready for communicate */
 	HMI_receiveACK();
 	/* receive the result of comparsion between the two passwords */
-	a_verification_message = UART_receiveByte();
-	if(a_verification_message == MATCHED)
+	//a_verification_message = UART_receiveByte();
+	if(UART_receiveByte() == MATCHED)
 	{
 		(*a_NumberOfWrongPasswords) = 0;
 		HMI_displayDoorAction();
@@ -309,7 +333,7 @@ void HMI_openDoorWrongPassword(uint8 *a_NumberOfWrongPasswords)
 /*================================= HMI_changePassword ======================================*/
 void HMI_changePassword(uint8 *a_NumberOfWrongPasswords)
 {
-	uint8 a_verificationMessage = 0;
+	//uint8 a_verificationMessage = 0;
 	/***************************************************************************************************************************
 	 * 1. clear the screen.
 	 * 2. send ready to contact to the CONTROL ECU, and wait until it is ready.
@@ -349,15 +373,15 @@ void HMI_changePassword(uint8 *a_NumberOfWrongPasswords)
 	/************** Actualy start ***********************/
 	HMI_enterPassword();
 	HMI_receiveACK();
-	a_verificationMessage = UART_receiveByte();
+	//a_verificationMessage = UART_receiveByte();
 
-	if(a_verificationMessage == CHANGE_PASSWORD)
+	if(UART_receiveByte() == CHANGE_PASSWORD)
 	{
 	 	LCD_clearScreen();
 	 	HMI_passwordInputOperation();
 		(*a_NumberOfWrongPasswords) = 0;
 	}
-	else if(a_verificationMessage == MISMATCHED)
+	else if(UART_receiveByte() == MISMATCHED)
 	{
 		while((*a_NumberOfWrongPasswords) < MAX_NUM_OF_WRONG_PASS_ENTERED)
 		{
@@ -368,9 +392,9 @@ void HMI_changePassword(uint8 *a_NumberOfWrongPasswords)
 			LCD_clearScreen();
 			HMI_enterPassword();
 			HMI_receiveACK();
-			a_verificationMessage = UART_receiveByte();
+			//a_verificationMessage = UART_receiveByte();
 
-			if(a_verificationMessage == CHANGE_PASSWORD)
+			if(UART_receiveByte() == CHANGE_PASSWORD)
 			{
 				LCD_clearScreen();
 				(*a_NumberOfWrongPasswords) = 0;
@@ -386,59 +410,4 @@ void HMI_changePassword(uint8 *a_NumberOfWrongPasswords)
 	}
 	LCD_clearScreen();
 }
-#if 0
-/*========================================== HMI_enterOldPassword ===============================================*/
-void HMI_enterOldPassword(void)
-{
- 	uint8 a_oldPassword[NUMBER_OF_DIGITS_IN_PASSWORD],key=0,i=0;
-	LCD_displayString("Enter Old Pass");
-		LCD_moveCursor(1, 5);
-		while(i<5)
-		{
-			key = KEYPAD_getPressedKey();
-			if(key >= 0 && key <= 9)
-			{
-				a_oldPassword[i] = key;
-				LCD_displayCharacter('*');
-			}
-			else
-			{
-				--i;
-			}
 
-			_delay_ms(500);
-			i++;
-		}
-		while(KEYPAD_getPressedKey() != ENTER);
-		UART_sendByte(READY);
-		while(UART_receiveByte() != READY);
-		HMI_sendPassword(a_oldPassword);
-}
-/*========================================== HMI_enterNewPassword ===============================================*/
-void HMI_enterNewPassword(void)
-{
-	uint8 a_newPassword[NUMBER_OF_DIGITS_IN_PASSWORD],key=0,i=0;
-	LCD_displayString("Enter New Pass:");
-	LCD_moveCursor(1, 5);
-	while(i<5)
-	{
-		key = KEYPAD_getPressedKey();
-		if(key >= 0 && key <= 9)
-		{
-			a_newPassword[i] = key;
-			LCD_displayCharacter('*');
-		}
-		else
-		{
-			--i;
-		}
-
-		_delay_ms(500);
-		i++;
-	}
-	while(KEYPAD_getPressedKey() != ENTER);
-	UART_sendByte(READY);
-	while(UART_receiveByte() != READY);
-	HMI_sendPassword(a_newPassword);
-}
-#endif

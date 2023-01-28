@@ -13,7 +13,7 @@
 #ifndef HAL_LCD_LCD_H_
 #define HAL_LCD_LCD_H_
 
-#include "../../HELPERS/Std_types.h"
+#include "../../LIBRARIES/Std_types.h"
 
 /*******************************************************************************
  *                                Definitions                                  *

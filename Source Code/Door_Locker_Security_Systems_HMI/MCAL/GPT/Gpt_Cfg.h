@@ -37,10 +37,21 @@
 #define T1_MAX_VALUE 65536
 #define T2_MAX_VALUE 256
 
+#if DISABLE
 #define GPT_SET_PRESCALER_API
+#endif
+
+#if DISABLE
 #define GPT_SET_MODE_API
+#endif
+
+#if DISABLE
 #define GPT_SET_INIT_VALUE_API
+#endif
+
+#if DISABLE
 #define GPT_SET_COMP_VALUE_API
+#endif
 
 #define GPT_T0_INT_ENABLE	DISABLE
 #define GPT_T1_INT_ENABLE	ENABLE

@@ -15,6 +15,9 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#define PASSWORD_NOT_ENTERED	0xFF
+#define PASSWORD_ENTERED		1
+
 int main(void)
 {
 	/*****************************************************************************************************************
@@ -23,7 +26,7 @@ int main(void)
 	 *  [uint8 a_num_of_wrong_passwords]: this variable used to observe how many wrong passwords the user has enterred.
 	 *  [uint8 a_CTROL_verification_res]: this variable stores the result of the comparsion betweem the two input passwords.
 	 ******************************************************************************************************************/
-	uint8 a_num_of_wrong_passwords = 0,flag;
+	uint8 a_num_of_wrong_passwords = 0,a_passwordState;
 	uint8 a_CTROL_verification_res = 0,a_CTROL_option=0;
 
 	/*********************************************************************************************************
@@ -37,13 +40,13 @@ int main(void)
 	_delay_ms(10);
 
 	/* read the value of flag from memory */
-	EEPROM_readByte(CODE_STATE_ADDRESS, &flag);
+	EEPROM_readByte(CODE_STATE_ADDRESS, &a_passwordState);
 	/* check if HMI is ready to contact. if it is ready send the flag to it. */
 	CTRL_sendACK();
-	UART_sendByte(flag);
+	UART_sendByte(a_passwordState);
 
 	/* Don't come here again if you have set your password brefore. */
-	if(flag != 1)
+	if(a_passwordState == PASSWORD_NOT_ENTERED)
 	{
 		/*///////////////////////////// set your password for the first time //////////////////////////////////*/
 		/********************************************************************************************************
@@ -60,8 +63,8 @@ int main(void)
 	}
 
 	/* set the flag to 1 and store it in memory to prevent the program from starting again from this point */
-	flag = 1;
-	EEPROM_writeByte(CODE_STATE_ADDRESS, flag);
+	a_passwordState = PASSWORD_ENTERED;
+	EEPROM_writeByte(CODE_STATE_ADDRESS, a_passwordState);
 
 	/* Enable global interrupt */
 	SREG |= (1<<7);

@@ -10,9 +10,9 @@
  [DESCRIPTION]: This file contains all the declarations of the GPIO module.
  ---------------------------------------------------------------------------------*/
 
-#include "../../HELPERS/comman_macros.h"
 #include <avr/io.h>
 #include "gpio.h"
+#include "../../LIBRARIES/comman_macros.h"
 
 /*----------------------------------------------------------------------------------------------
  * Description :

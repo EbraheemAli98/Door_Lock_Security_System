@@ -14,7 +14,7 @@
 #ifndef MCAL_UART_UART_H_
 #define MCAL_UART_UART_H_
 
-#include "../../HELPERS/Std_types.h"
+#include "../../LIBRARIES/Std_types.h"
 
 /*******************************************************************************
  *                                Definitions	                               *
@@ -97,6 +97,7 @@ void UART_sendByte(uint8 data);
  --------------------------------------------------------------------------*/
 uint8 UART_receiveByte(void);
 
+#if 0
 /*-------------------------------------------------------------------------
  [Function Name]:UART_sendString
  [Arguments]:
@@ -113,7 +114,12 @@ void UART_sendString(uint8 *Str);
  [Return]: return the received string.
  --------------------------------------------------------------------------*/
 void UART_receiveString(uint8* Str);
+#endif
 
+#if 0
 void UART_sendPassword(uint8 *password);
 void UART_receivePassword(uint8 *password);
+#endif
+
 #endif /* MCAL_UART_UART_H_ */
+

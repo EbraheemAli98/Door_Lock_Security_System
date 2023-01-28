@@ -9,7 +9,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include MCAL/UART/subdir.mk
--include MCAL/TIMER/subdir.mk
+-include MCAL/GPT/subdir.mk
 -include MCAL/GPIO/subdir.mk
 -include HMI_SOFTWARE_SUPPORT_LAYER/subdir.mk
 -include HAL/LCD/subdir.mk

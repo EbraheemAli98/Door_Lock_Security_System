@@ -10,11 +10,11 @@
  [DESCRIPTION]: This file contains the lcd functions definition.
  --------------------------------------------------------------------------------------*/
 
-#include "../../HELPERS/comman_macros.h"
 #include "../../MCAL/GPIO/gpio.h"
 #include <util/delay.h>
 #include <stdlib.h>
 #include "lcd.h"
+#include "../../LIBRARIES/comman_macros.h"
 
 
 /*******************************************************************************

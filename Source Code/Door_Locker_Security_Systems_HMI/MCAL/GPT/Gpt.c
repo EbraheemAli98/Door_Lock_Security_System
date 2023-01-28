@@ -32,8 +32,9 @@
  	 	 	 	5. Enable interrupt if needed.
  [Return]: None
  -------------------------------------------------------------------------------*/
+#if(GPT_T0_INT_ENABLE == ENABLE)
 static void GPT_InitTimer0(const GPT_ConfigType* Config_Ptr);
-
+#endif
 /*------------------------------------------------------------------------------
  [Function Name]: GPT_InitTimer1
  [Arguments]:
@@ -47,8 +48,9 @@ static void GPT_InitTimer0(const GPT_ConfigType* Config_Ptr);
  	 	 	 	5. Enable interrupt if needed.
  [Return]: None
  -------------------------------------------------------------------------------*/
+#if(GPT_T1_INT_ENABLE == ENABLE)
 static void GPT_InitTimer1(const GPT_ConfigType* Config_Ptr);
-
+#endif
 /*------------------------------------------------------------------------------
  [Function Name]: GPT_InitTimer2
  [Arguments]:
@@ -62,8 +64,9 @@ static void GPT_InitTimer1(const GPT_ConfigType* Config_Ptr);
  	 	 	 	5. Enable interrupt if needed.
  [Return]: None
  -------------------------------------------------------------------------------*/
+#if(GPT_T2_INT_ENABLE == ENABLE)
 static void GPT_InitTimer2(const GPT_ConfigType* Config_Ptr);
-
+#endif
 /*******************************************************************************
  * 						 GPT Global Variables
  *******************************************************************************/
@@ -81,7 +84,6 @@ static void (*g_Timer1_callBack_Ptr)(void) = NULL_PTR;
 static void (*g_Timer2_callBack_Ptr)(void) = NULL_PTR;
 #endif
 
-static void (*GPT_Init[NUM_OF_TIMER_CHANNELS])(const GPT_ConfigType*) = {GPT_InitTimer0, GPT_InitTimer1, GPT_InitTimer2};
 
 /*******************************************************************************
  * 						GPT Functions' Definition
@@ -91,7 +93,27 @@ void GPT_startTimer(TimerType Tx)
 {
 	if(Tx>=0 && Tx<=2)
 	{
-		(*GPT_Init[Tx])(&GPT_ConfigStructObj);
+		switch(Tx)
+		{
+#if(GPT_T0_INT_ENABLE == ENABLE)
+		case T0:
+			GPT_InitTimer0(&GPT_ConfigStructObj);
+			break;
+#endif
+#if(GPT_T1_INT_ENABLE == ENABLE)
+		case T1:
+			GPT_InitTimer1(&GPT_ConfigStructObj);
+			break;
+#endif
+#if(GPT_T2_INT_ENABLE == ENABLE)
+		case T2:
+			GPT_InitTimer2(&GPT_ConfigStructObj);
+			break;
+#endif
+		default:
+			/* Do Nothing... */
+			break;
+		}
 	}
 	else
 	{
@@ -237,6 +259,7 @@ void GPT_stopTimer(TimerType Tx)
 }
 
 /*------------------------------------------ GPT_InitTimer0 ------------------------------------------------------*/
+#if(GPT_T0_INT_ENABLE == ENABLE)
 static void GPT_InitTimer0(const GPT_ConfigType* Config_Ptr)
 {
 	if(Config_Ptr != NULL_PTR)
@@ -289,9 +312,9 @@ static void GPT_InitTimer0(const GPT_ConfigType* Config_Ptr)
 		/* Do Nothing...*/
 	}
 }
-
+#endif
 /*------------------------------------------ GPT_InitTimer1 ------------------------------------------------------*/
-
+#if(GPT_T1_INT_ENABLE == ENABLE)
 static void GPT_InitTimer1(const GPT_ConfigType* Config_Ptr)
 {
 	if(Config_Ptr != NULL_PTR)
@@ -373,8 +396,9 @@ static void GPT_InitTimer1(const GPT_ConfigType* Config_Ptr)
 		/* Do Nothing...*/
 	}
 }
-
+#endif
 /*------------------------------------------ GPT_InitTimer2 ------------------------------------------------------*/
+#if(GPT_T2_INT_ENABLE == ENABLE)
 static void GPT_InitTimer2(const GPT_ConfigType* Config_Ptr)
 {
 	if(Config_Ptr != NULL_PTR)
@@ -429,6 +453,7 @@ static void GPT_InitTimer2(const GPT_ConfigType* Config_Ptr)
 		/* Do Nothing..*/
 	}
 }
+#endif
 /*******************************************************************************
  * 						GPT Enable/Disable Notification Functions
  *******************************************************************************/

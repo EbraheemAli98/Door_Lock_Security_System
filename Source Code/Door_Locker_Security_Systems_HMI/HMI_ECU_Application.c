@@ -12,9 +12,11 @@
  -------------------------------------------------------------------------------*/
 #include "HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.h"
 #include "HAL/LCD/lcd.h"
-#include "HAL/KEYPAD/keypad.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
+#define PASSWORD_NOT_ENTERED	0xFF
+#define PASSWORD_ENTERED		1
 
 int main(void)
 {
@@ -24,7 +26,7 @@ int main(void)
 	 *  [uint8 a_num_of_wrong_passwords]: this variable used to observe how many wrong passwords the user has enterred.
 	 *  [uint8 a_CTROL_verification_res]: this variable stores the result of the comparsion betweem the two input passwords.
 	 ***********************************************************************************************************************/
-	uint8 a_num_of_wrong_passwords = 0,flag;
+	uint8 a_num_of_wrong_passwords = 0,a_passwordState;
 	uint8 a_HMI_option = 0,a_HMI_optionOrder = 0;
 
 	/********************************************************************************************
@@ -33,17 +35,17 @@ int main(void)
 	 * 3. initiate LCD.
 	 * 4. set the uart configuration: 9600 baud-rate, one stop bit, 8bits-data,and no parity bit.
 	 ********************************************************************************************/
-	HMI_init();
+	HMI_Init();
 
 	/* ********************************************
 	 * wait for control ECU to send ready
 	 * receive the flag value from control ECU
 	 * ********************************************/
 	HMI_receiveACK();
-	flag = UART_receiveByte();
+	a_passwordState = UART_receiveByte();
 
 	/* Don't enter here if you already set you password */
-	if(flag != 1)
+	if(a_passwordState == PASSWORD_NOT_ENTERED)
 	{
 		/*//////////////////////////// set the password for the first time ///////////////////////////////////*/
 		/******************************************************************************************************
@@ -71,9 +73,9 @@ int main(void)
 	}
 
 	/* Enable the global interrupt */
-	SREG |= (1<<7);
+	ENABLE_INTERRUPTS();
 
-	while(1)
+	for(;;)
 	{
 		/* Get the chosen option from the user */
 		a_HMI_option = HMI_getChosenOption();
@@ -90,7 +92,7 @@ int main(void)
 			 * 6. get option_order from the control ECU.
 			 *********************************************************************************/
 			a_num_of_wrong_passwords++;
-			LCD_clearScreen();
+			HMI_CLEAR_SCREEN();
 			HMI_sendACK();
 			UART_sendByte(OPEN_DOOR_OPTION);
 			HMI_enterPassword();

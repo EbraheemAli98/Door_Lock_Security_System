@@ -12,6 +12,7 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="I:\Courses\EmbeddedSystem\ARM\__workspace\Door_Lock_Security\Source Code\Door_Locker_Security_Systems_HMI"/>
 			<item value="I:\Courses\EmbeddedSystem\ARM\__workspace\Door_Lock_Security\Source Code\Door_Locker_Security_Systems_CONTROL"/>
 		</list>
 	</section>

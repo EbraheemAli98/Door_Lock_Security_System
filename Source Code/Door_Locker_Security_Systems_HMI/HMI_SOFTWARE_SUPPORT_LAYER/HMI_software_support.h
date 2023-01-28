@@ -20,9 +20,9 @@
 /***********************************************************************************
  * 								INCLUDES
  ***********************************************************************************/
-#include "../HELPERS/Std_types.h"
+#include "../LIBRARIES/Std_types.h"
 #include "../MCAL/UART/uart.h"
-#include "../MCAL/TIMER/timer.h"
+
 /***********************************************************************************
  * 								Definitions
  ***********************************************************************************/
@@ -37,7 +37,6 @@
 #define TIME_OF_DOOR_STOP	(3)   /* 3 sec */
 #define TIME_OF_DOOR_OPEN	(15)  /* 15 sec */
 #define TIME_OF_DOOR_CLOSE  (15)  /* 15 sec */
-#define TIME_OF_DOOR_ACTION (33)  /* 33 sec */
 
 #define CHANGE_PASSWORD (44)
 #define DOOR_OPEN	(88)
@@ -50,8 +49,11 @@
 /***********************************************************************************
  * 							Extern Global Variables
  ***********************************************************************************/
-extern volatile uint32 g_seconds;
+extern volatile uint8 g_seconds;
 
+#define ENABLE_INTERRUPTS()		SREG|=(1<<7)
+#define DISABLE_INTERRUPTS()	sreg&=~(1<<7)
+#define HMI_CLEAR_SCREEN()		LCD_clearScreen()
 /***********************************************************************************
  * 							 Functions' Prototype
  ***********************************************************************************/
@@ -64,7 +66,7 @@ extern volatile uint32 g_seconds;
  	 	 	 	 - initiate timer1: compare-mode, prescaler_1024.
  [Return]:None
  -----------------------------------------------------------------------------*/
-void HMI_init(void);
+void HMI_Init(void);
 /*----------------------------------------------------------------------------
  [Function Name]:HMI_enterPassword
  [Arguments]:None
@@ -111,7 +113,9 @@ void HMI_readPassword(uint8 *a_password);
  [Description]: Funtion to display the option menu.
  [Return]:None
  -----------------------------------------------------------------------------*/
+#if 0
 void HMI_displayOptionMenu(void);
+#endif
 /*----------------------------------------------------------------------------
  [Function Name]:HMI_displayDoorAction
  [Arguments]:None
