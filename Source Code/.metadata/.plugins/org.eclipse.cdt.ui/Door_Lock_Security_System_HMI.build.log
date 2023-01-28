@@ -1,0 +1,42 @@
+18:31:50 **** Incremental Build of configuration Release for project Door_Lock_Security_System_HMI ****
+make all 
+Building file: ../HMI_ECU_Application.c
+Invoking: AVR Compiler
+avr-gcc -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=8000000UL -MMD -MP -MF"HMI_ECU_Application.d" -MT"HMI_ECU_Application.o" -c -o "HMI_ECU_Application.o" "../HMI_ECU_Application.c"
+Finished building: ../HMI_ECU_Application.c
+ 
+Building target: Door_Lock_Security_System_HMI.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Door_Lock_Security_System_HMI.map -mmcu=atmega16 -o "Door_Lock_Security_System_HMI.elf"  ./MCAL/UART/uart.o  ./MCAL/GPT/Gpt.o ./MCAL/GPT/Gpt_Lcfg.o  ./MCAL/GPIO/gpio.o  ./HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.o  ./HAL/LCD/lcd.o  ./HAL/KEYPAD/keypad.o  ./HMI_ECU_Application.o   
+Finished building target: Door_Lock_Security_System_HMI.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Door_Lock_Security_System_HMI.elf  >"Door_Lock_Security_System_HMI.lss"
+Finished building: Door_Lock_Security_System_HMI.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Door_Lock_Security_System_HMI.elf  "Door_Lock_Security_System_HMI.hex"
+Finished building: Door_Lock_Security_System_HMI.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Door_Lock_Security_System_HMI.elf  "Door_Lock_Security_System_HMI.eep"
+Finished building: Door_Lock_Security_System_HMI.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega16 Door_Lock_Security_System_HMI.elf
+AVR Memory Usage
+----------------
+Device: atmega16
+
+Program:    4684 bytes (28.6% Full)
+(.text + .data + .bootloader)
+
+Data:        233 bytes (22.8% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+18:31:51 Build Finished. 0 errors, 0 warnings. (took 547ms)
+

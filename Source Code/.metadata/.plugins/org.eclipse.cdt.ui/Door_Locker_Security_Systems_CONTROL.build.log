@@ -1,0 +1,49 @@
+19:58:18 **** Incremental Build of configuration Debug for project Door_Locker_Security_Systems_CONTROL ****
+make all 
+Building file: ../HAL/DC_MOTOR/motor.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HAL/DC_MOTOR/motor.d" -MT"HAL/DC_MOTOR/motor.o" -c -o "HAL/DC_MOTOR/motor.o" "../HAL/DC_MOTOR/motor.c"
+Finished building: ../HAL/DC_MOTOR/motor.c
+ 
+Building file: ../HAL/BUZZER/buzzer.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HAL/BUZZER/buzzer.d" -MT"HAL/BUZZER/buzzer.o" -c -o "HAL/BUZZER/buzzer.o" "../HAL/BUZZER/buzzer.c"
+Finished building: ../HAL/BUZZER/buzzer.c
+ 
+Building file: ../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.d" -MT"CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o" -c -o "CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o" "../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c"
+Finished building: ../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c
+ 
+Building file: ../CONTROL_ECU.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"CONTROL_ECU.d" -MT"CONTROL_ECU.o" -c -o "CONTROL_ECU.o" "../CONTROL_ECU.c"
+Finished building: ../CONTROL_ECU.c
+ 
+Building target: Door_Locker_Security_Systems_CONTROL.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Door_Locker_Security_Systems_CONTROL.map -mmcu=atmega16 -o "Door_Locker_Security_Systems_CONTROL.elf"  ./MCAL/UART/uart.o  ./MCAL/TWI/twi.o  ./MCAL/GPT/Gpt.o ./MCAL/GPT/Gpt_Lcfg.o  ./MCAL/GPIO/gpio.o  ./HAL/EEPROM/eeprom.o  ./HAL/DC_MOTOR/motor.o  ./HAL/BUZZER/buzzer.o  ./CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o  ./CONTROL_ECU.o   
+Finished building target: Door_Locker_Security_Systems_CONTROL.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Door_Locker_Security_Systems_CONTROL.elf  >"Door_Locker_Security_Systems_CONTROL.lss"
+Finished building: Door_Locker_Security_Systems_CONTROL.lss
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega16 Door_Locker_Security_Systems_CONTROL.elf
+AVR Memory Usage
+----------------
+Device: atmega16
+
+Program:   11006 bytes (67.2% Full)
+(.text + .data + .bootloader)
+
+Data:         63 bytes (6.2% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+19:58:21 Build Finished. 0 errors, 0 warnings. (took 2s.575ms)
+

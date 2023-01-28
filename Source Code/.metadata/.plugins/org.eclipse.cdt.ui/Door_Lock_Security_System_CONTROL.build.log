@@ -1,0 +1,47 @@
+18:19:59 **** Incremental Build of configuration Release for project Door_Lock_Security_System_CONTROL ****
+make all 
+Building file: ../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c
+Invoking: AVR Compiler
+avr-gcc -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=8000000UL -MMD -MP -MF"CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.d" -MT"CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o" -c -o "CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o" "../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c"
+Finished building: ../CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.c
+ 
+Building file: ../CONTROL_ECU.c
+Invoking: AVR Compiler
+avr-gcc -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=8000000UL -MMD -MP -MF"CONTROL_ECU.d" -MT"CONTROL_ECU.o" -c -o "CONTROL_ECU.o" "../CONTROL_ECU.c"
+Finished building: ../CONTROL_ECU.c
+ 
+Building target: Door_Lock_Security_System_CONTROL.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Door_Lock_Security_System_CONTROL.map -mmcu=atmega16 -o "Door_Lock_Security_System_CONTROL.elf"  ./MCAL/UART/uart.o  ./MCAL/TWI/twi.o  ./MCAL/GPT/Gpt.o ./MCAL/GPT/Gpt_Lcfg.o  ./MCAL/GPIO/gpio.o  ./HAL/EEPROM/eeprom.o  ./HAL/DC_MOTOR/Motor.o ./HAL/DC_MOTOR/Motor_Lcfg.o  ./HAL/BUZZER/Buzzer.o ./HAL/BUZZER/Buzzer_Lcfg.o  ./CONTROL_SOFTWARE_SUPPORT_LAYER/CONTROL_software_support.o  ./CONTROL_ECU.o   
+Finished building target: Door_Lock_Security_System_CONTROL.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Door_Lock_Security_System_CONTROL.elf  >"Door_Lock_Security_System_CONTROL.lss"
+Finished building: Door_Lock_Security_System_CONTROL.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Door_Lock_Security_System_CONTROL.elf  "Door_Lock_Security_System_CONTROL.hex"
+Finished building: Door_Lock_Security_System_CONTROL.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Door_Lock_Security_System_CONTROL.elf  "Door_Lock_Security_System_CONTROL.eep"
+Finished building: Door_Lock_Security_System_CONTROL.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega16 Door_Lock_Security_System_CONTROL.elf
+AVR Memory Usage
+----------------
+Device: atmega16
+
+Program:    4198 bytes (25.6% Full)
+(.text + .data + .bootloader)
+
+Data:         66 bytes (6.4% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+18:19:59 Build Finished. 0 errors, 0 warnings. (took 735ms)
+

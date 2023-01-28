@@ -1,0 +1,390 @@
+/*-----------------------------------------------------------------------------------
+ [FILE NAME]: HMI_support.c
+
+ [AUTHER]: Ebraheem Ali
+
+ [VERSION]: V1.0
+
+ [DATA CREATED]: June 18, 2022
+
+ [DESCRIPTION]: This file contains the definitions of all functions used in the main
+ 	 	 	 	application of HMI_ECU.
+ ------------------------------------------------------------------------------------*/
+
+#include "HMI_software_support.h"
+#include "../HAL/KEYPAD/keypad.h"
+#include "../HAL/LCD/lcd.h"
+#include <util/delay.h>
+#include "../MCAL/GPT/Gpt.h"
+#include "../MCAL/UART/uart.h"
+
+/***********************************************************************************************
+							 	 	 Global Variables
+ ***********************************************************************************************/
+
+/*------------------------------------------------------------------------------------------
+ * [g_seconds]: variable to count the number of seconds at each interrupt come.
+ * [T1_ConfigObj]: variable of type object from a structure stores the Timer configuartions.
+ -------------------------------------------------------------------------------------------*/
+
+volatile static uint32 g_seconds = 0;
+
+/*************************************************************************************************
+ * 								FUNCTIONS' DEFINITIONS
+ *************************************************************************************************/
+
+/*==================================== HMI_init ===============================================*/
+void HMI_Init(void)
+{
+	/********************************************************************************************
+	 * 1. initiate the timer configuration:timer1,compare-mode,prescaler_1024.
+	 * 2. set the callback function = HMI_callBack.
+	 * 3. initiate LCD.
+	 * 4. set the uart configuration: 9600 baud-rate, one stop bit, 8bits-data,and no parity bit.
+	 ********************************************************************************************/
+	GPT_T1_setCallBack(HMI_callBack);
+	LCD_Init();
+	UART_ConfigType uart_configObj = {9600,EIGHT_BITS,DISABLE_PARITY,ONE_STOP_BIT};
+	UART_init(&uart_configObj);
+	GPT_startTimer(T1);
+	GPT_enableNotification(T1, OUTPUT_COMPARE);
+}
+/*==================================== displayOptionMenu ============================================*/
+void HMI_displayOptionMenu(void)
+{
+	LCD_displayString("+:Open Door");
+	LCD_displayStringRowColumn(1, 0, "-:Change Pass");
+}
+/*==================================== enterPassword ============================================*/
+void HMI_enterPassword(void)
+{
+	uint8 a_pass_array[NUMBER_OF_DIGITS_IN_PASSWORD],key,i=0;
+	LCD_displayString("Enter Your Pass");
+	LCD_moveCursor(1, 5);
+	while(i<5)
+		{
+			key = KEYPAD_getPressedKey();
+			if(key >= 0 && key <= 9)
+			{
+				a_pass_array[i] = key;
+				LCD_displayCharacter('*');
+			}
+			else
+			{
+				--i;
+			}
+
+			_delay_ms(500);
+			i++;
+		}
+	while(KEYPAD_getPressedKey() != ENTER);
+	HMI_sendACK();
+	HMI_sendPassword(a_pass_array);
+}
+/*==================================== enterConfirmPassword =======================================*/
+void HMI_enterConfirmPassword(void)
+{
+	uint8 key,i=0, a_confim_array[NUMBER_OF_DIGITS_IN_PASSWORD];
+	LCD_displayString("Reenter The Pass");
+	LCD_moveCursor(1, 5);
+	while(i<5)
+		{
+			key = KEYPAD_getPressedKey();
+			if(key >= 0 && key <= 9)
+			{
+				a_confim_array[i] = key;
+				LCD_displayCharacter('*');
+			}
+			else
+			{
+				--i;
+			}
+			_delay_ms(500);
+			i++;
+		}
+	while(KEYPAD_getPressedKey() != ENTER);
+	HMI_sendACK();
+	HMI_sendPassword(a_confim_array);
+}
+/*================================= passwordInputOperation =======================================*/
+void HMI_passwordInputOperation(void)
+{
+	uint8 a_comfirm_message = 0;
+	/******************************************************************************************************
+	 * 1. Take the password from user and send it to the control ECU.
+	 * 2. clear the screen.
+	 * 3. Take the confirm password and send it to the control ECU.
+	 * 4. clear the screen.
+	 * 5. wait the control ECU to finish its task(comparing the two input passwords) and send ready to it.
+	 * 6. receive the compare result in variable a_comfirm_message.
+	 * 7. if the compare message = matched:
+	 * 	7-1. clear the screen.
+	 * 	7-2. display "matched".
+	 * 	7-3. display "password saved" on the next line.
+	 * 	7-4. wait for 500  msec.
+	 * 	7-5. clear screen.
+	 * 8. if the compare message = mis-matched:
+	 * 	8-1. clear the screen.
+	 * 	8-2. display "MISMATCHED" .
+	 * 	8-3. displsy "Try Again" on the next line.
+	 * 	8-4. wait for 500 msec.
+	 * 	8-5. clear the screen.
+	 * 9. loop until the user enter a matched passwords.
+	 *******************************************************************************************************/
+		do
+		{
+			HMI_enterPassword();
+			LCD_clearScreen();
+			HMI_enterConfirmPassword();
+			LCD_clearScreen();
+			HMI_receiveACK();
+			a_comfirm_message = HMI_receiveFromControlECU();
+			if( a_comfirm_message == MATCHED)
+			{
+				LCD_clearScreen();
+				LCD_displayStringRowColumn(0, 5, "MATCHED");
+				LCD_displayStringRowColumn(1, 2, "Password Saved");
+				_delay_ms(500);
+				LCD_clearScreen();
+			}
+			else
+			{
+				LCD_clearScreen();
+				LCD_moveCursor(0, 3);
+				LCD_displayString("MISMATCHED");
+				LCD_displayStringRowColumn(1, 3, "TRY AGAIN");
+				_delay_ms(500);
+				LCD_clearScreen();
+			}
+		}while(a_comfirm_message == MISMATCHED);
+}
+/*==================================== getChosenOption ================================*/
+uint8 HMI_getChosenOption(void)
+{
+	uint8 a_option = 0;
+	do
+	{
+		HMI_displayOptionMenu();
+		a_option = KEYPAD_getPressedKey();
+	}while((a_option != OPEN_DOOR_OPTION) && (a_option != CHANGE_PASSWORD_OPTION));
+	return a_option;
+}
+/*==================================== sendPassword =======================================*/
+void HMI_sendPassword(uint8 *a_password)
+{
+	uint8 i;
+	for(i=0; i<NUMBER_OF_DIGITS_IN_PASSWORD; i++)
+	{
+		HMI_sendToControlECU(a_password[i]);
+		_delay_ms(50);
+	}
+}
+/*==================================== readPassword =======================================*/
+void HMI_readPassword(uint8 *a_password)
+{
+	uint8 i;
+	for(i=0; i< NUMBER_OF_DIGITS_IN_PASSWORD; i++)
+	{
+		a_password[i] = HMI_receiveFromControlECU();
+		_delay_ms(50);
+	}
+}
+/*======================================== displayDoorAction ==========================================*/
+void HMI_displayDoorAction(void)
+{
+	/***************************************************
+	 * 1. reset the value of g_seconds.
+	 * 2. clear the screen.
+	 * 3. display "Door Is Opening"
+	 * 4. wait for 15 seconds.
+	 * 5. clear the screen.
+	 * 6. display "Door Open..".
+	 * 7. wait for 3 seconds.
+	 * 8. clear the screen.
+	 * 9. display "Door Is Closing".
+	 * 10. wait for 15 seconds.
+	 * 11. clear screen.
+	 * 12. display "Door close" for 100 msec.
+	 * 13. clear the screen.
+	 **************************************************/
+	g_seconds = 0;
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0, 0, "Door Is Opening");
+	while(g_seconds < TIME_OF_DOOR_OPEN);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0, 0, "Door Open..");
+	while(g_seconds < (TIME_OF_DOOR_STOP+TIME_OF_DOOR_OPEN));
+	LCD_clearScreen();
+	LCD_displayString("Door Is Closing");
+	while(g_seconds < (TIME_OF_DOOR_STOP+TIME_OF_DOOR_OPEN+TIME_OF_DOOR_CLOSE));
+	LCD_clearScreen();
+	LCD_displayString("Door close");
+	_delay_ms(100);
+	LCD_clearScreen();
+}
+/*======================================== callBack ==========================================*/
+void HMI_callBack(void)
+{
+	g_seconds++;
+}
+/*======================================== displayAlarmAction =======================================*/
+void HMI_displayAlarmAction(void)
+{
+	g_seconds = 0;
+	LCD_clearScreen();
+	LCD_displayString("ERROR OPERATION");
+	while(g_seconds < TIME_OF_ALARM);
+	LCD_clearScreen();
+}
+/*======================================== openDoorCheckPassword =====================================*/
+void HMI_openDoorWrongPassword(uint8 *a_NumberOfWrongPasswords)
+{
+	uint8 a_verification_message = 0;
+	/***********************************************************************************************
+	 * 1. increment the number of wrong passwords by 1.
+	 * 2. clear the screen.
+	 * 3. display "Wrong Password" on the screen.
+	 * 4. wait for 500 msec.
+	 * 5. take the password from user and send it to the control ECU.
+	 * 6. check if CONTROL ECU had finished its task and ready for communicate.
+	 * 7. receve the verification message from the control ECU.
+	 * 8. if the verification message = Matched.
+	 * 	8-1. reset the number of wrong passwords to 0.
+	 * 	8-2. implement the door action.
+	 * 	8-3. exit from the loop.
+	 * 9. if the verification message is equal Mismatched:
+	 * 	9-1. loop again until enter the correct passwords.
+	 * 10. if the number of wrong passwords reaches its maximum value (3):
+	 * 	10-1. exit from the loop.
+	 * 	10-2. reset the number of wrong passwords to 0.
+	 * 	10-3. display the alarm message.
+	 *************************************************************************************************/
+	while((*a_NumberOfWrongPasswords)< MAX_NUM_OF_WRONG_PASS_ENTERED)
+	{
+	(*a_NumberOfWrongPasswords)++;
+	LCD_clearScreen();
+	LCD_displayString("Wrong Password");
+	_delay_ms(500);
+	LCD_clearScreen();
+	/* enter the password again from user */
+	HMI_enterPassword();
+	/* check if CONTROL ECU had finished its task and ready for communicate */
+	HMI_receiveACK();
+	/* receive the result of comparsion between the two passwords */
+	a_verification_message = HMI_receiveFromControlECU();
+	if(a_verification_message == MATCHED)
+	{
+		(*a_NumberOfWrongPasswords) = 0;
+		HMI_displayDoorAction();
+		break;  /* exit the while loop */
+	}
+	}
+	if((*a_NumberOfWrongPasswords) == MAX_NUM_OF_WRONG_PASS_ENTERED)
+	{
+		(*a_NumberOfWrongPasswords) = 0;
+		HMI_displayAlarmAction();
+	}
+}
+/*================================= changePassword ======================================*/
+void HMI_changePassword(uint8 *a_NumberOfWrongPasswords)
+{
+
+	/***************************************************************************************************************************
+	 * 1. clear the screen.
+	 * 2. send ready to contact to the CONTROL ECU, and wait until it is ready.
+	 * 3. send the selected option (CHANGE_PASSWORD_OPTION) to the control ECU.
+	 * 4. take the password from user,and send it to the control ECU.
+	 * 5. wait until control ECU finish its task (compare the password sent with the old one) and send the verification message.
+	 * 6. receive the verification message from user.
+	 * 7. if the verification message is CHANGE_PASSWORD:
+	 * 	7-1. clear the screen.
+	 * 	7-2. set the new password.
+	 * 	7-3. reset the value of number of wrong passwords to 0.
+	 * 8. if the verification message in "MISMATCHED":
+	 * 	8-1. increment the number of wrong passwords by 1.
+	 * 	8-2. clear the screen.
+	 * 	8-3. display "Wrong Password".
+	 * 	8-4. wait for 500msec.
+	 * 	8-5. clear the screen.
+	 * 	8-6. enter the password again, and send it to control ECU to check its correctance.
+	 * 	8-7. wait until control ECU finich.
+	 * 	8-8. receive the verification message again.
+	 * 	8-9. if the verification message is CHANGE_PASSWORD:
+	 * 		8-9-1. clear the screen.
+	 * 		8-9-2. reset number of wrong passwords to zero.
+	 * 		8-9-3. set the new password.
+	 * 		8-9-4. exit from the loop.
+	 * 	8-10. loop until the password is matched or the number of wrong passwords reach its maximum value (3).
+	 * 	8-11. if the number of wrong passwords == 3:
+	 * 		8-11-1. reset the value of number of wrong passwords.
+	 * 		8-11-2. display the alarm action.
+	 * 9. clear the screen.
+	 *********************************************************************************************************************************/
+ 	LCD_clearScreen();
+
+ 	HMI_sendACK();
+	HMI_sendToControlECU(CHANGE_PASSWORD_OPTION);
+
+	/************** Actualy start ***********************/
+	HMI_enterPassword();
+	HMI_receiveACK();
+
+	if(HMI_receiveFromControlECU() == CHANGE_PASSWORD)
+	{
+	 	LCD_clearScreen();
+	 	HMI_passwordInputOperation();
+		(*a_NumberOfWrongPasswords) = 0;
+	}
+	else if(HMI_receiveFromControlECU() == MISMATCHED)
+	{
+		while((*a_NumberOfWrongPasswords) < MAX_NUM_OF_WRONG_PASS_ENTERED)
+		{
+			(*a_NumberOfWrongPasswords)++;
+			LCD_clearScreen();
+			LCD_displayString("Wrong Password");
+			_delay_ms(500);
+			LCD_clearScreen();
+			HMI_enterPassword();
+			HMI_receiveACK();
+
+			if(HMI_receiveFromControlECU() == CHANGE_PASSWORD)
+			{
+				LCD_clearScreen();
+				(*a_NumberOfWrongPasswords) = 0;
+				HMI_passwordInputOperation();
+				break;
+			}
+		}
+		if((*a_NumberOfWrongPasswords) == MAX_NUM_OF_WRONG_PASS_ENTERED)
+		{
+			(*a_NumberOfWrongPasswords) = 0;
+			HMI_displayAlarmAction();
+		}
+	}
+	LCD_clearScreen();
+}
+
+void HMI_receiveACK(void)
+{
+	/* Wait until the control ECU check the password*/
+	while(UART_receiveByte() != READY);
+	UART_sendByte(READY);
+}
+
+void HMI_sendACK(void)
+{
+	UART_sendByte(READY);
+	while(UART_receiveByte() != READY);
+}
+
+uint8 HMI_getOptionOrder(void)
+{
+	uint8 a_HMI_optionOrder = 0;
+	HMI_clearScreen();
+	HMI_sendACK();
+	HMI_sendToControlECU(OPEN_DOOR_OPTION);
+	HMI_enterPassword();
+	HMI_receiveACK();
+	a_HMI_optionOrder = HMI_receiveFromControlECU();
+	return a_HMI_optionOrder;
+}

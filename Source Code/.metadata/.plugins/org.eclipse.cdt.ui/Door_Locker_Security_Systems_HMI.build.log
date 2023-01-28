@@ -1,0 +1,70 @@
+19:49:55 **** Build of configuration Debug for project Door_Locker_Security_Systems_HMI ****
+make all 
+Building file: ../MCAL/UART/uart.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"MCAL/UART/uart.d" -MT"MCAL/UART/uart.o" -c -o "MCAL/UART/uart.o" "../MCAL/UART/uart.c"
+In file included from ../MCAL/UART/uart.c:17:
+c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h:90:3: warning: #warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+Finished building: ../MCAL/UART/uart.c
+ 
+Building file: ../MCAL/TIMER/timer.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"MCAL/TIMER/timer.d" -MT"MCAL/TIMER/timer.o" -c -o "MCAL/TIMER/timer.o" "../MCAL/TIMER/timer.c"
+../MCAL/TIMER/timer.c: In function 'TIMER1_setCallBack':
+../MCAL/TIMER/timer.c:164: warning: function return types not compatible due to 'volatile'
+Finished building: ../MCAL/TIMER/timer.c
+ 
+Building file: ../MCAL/GPIO/gpio.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"MCAL/GPIO/gpio.d" -MT"MCAL/GPIO/gpio.o" -c -o "MCAL/GPIO/gpio.o" "../MCAL/GPIO/gpio.c"
+Finished building: ../MCAL/GPIO/gpio.c
+ 
+Building file: ../HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.d" -MT"HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.o" -c -o "HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.o" "../HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.c"
+Finished building: ../HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.c
+ 
+Building file: ../HAL/LCD/lcd.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HAL/LCD/lcd.d" -MT"HAL/LCD/lcd.o" -c -o "HAL/LCD/lcd.o" "../HAL/LCD/lcd.c"
+In file included from ../HAL/LCD/lcd.c:15:
+c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h:90:3: warning: #warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+Finished building: ../HAL/LCD/lcd.c
+ 
+Building file: ../HAL/KEYPAD/keypad.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HAL/KEYPAD/keypad.d" -MT"HAL/KEYPAD/keypad.o" -c -o "HAL/KEYPAD/keypad.o" "../HAL/KEYPAD/keypad.c"
+Finished building: ../HAL/KEYPAD/keypad.c
+ 
+Building file: ../HMI_ECU_Application.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega16 -DF_CPU=1000000UL -MMD -MP -MF"HMI_ECU_Application.d" -MT"HMI_ECU_Application.o" -c -o "HMI_ECU_Application.o" "../HMI_ECU_Application.c"
+Finished building: ../HMI_ECU_Application.c
+ 
+Building target: Door_Locker_Security_Systems_HMI.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Door_Locker_Security_Systems_HMI.map -mmcu=atmega16 -o "Door_Locker_Security_Systems_HMI.elf"  ./MCAL/UART/uart.o  ./MCAL/TIMER/timer.o  ./MCAL/GPIO/gpio.o  ./HMI_SOFTWARE_SUPPORT_LAYER/HMI_software_support.o  ./HAL/LCD/lcd.o  ./HAL/KEYPAD/keypad.o  ./HMI_ECU_Application.o   
+Finished building target: Door_Locker_Security_Systems_HMI.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Door_Locker_Security_Systems_HMI.elf  >"Door_Locker_Security_Systems_HMI.lss"
+Finished building: Door_Locker_Security_Systems_HMI.lss
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega16 Door_Locker_Security_Systems_HMI.elf
+AVR Memory Usage
+----------------
+Device: atmega16
+
+Program:   15662 bytes (95.6% Full)
+(.text + .data + .bootloader)
+
+Data:        218 bytes (21.3% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+19:49:57 Build Finished. 0 errors, 3 warnings. (took 2s.240ms)
+

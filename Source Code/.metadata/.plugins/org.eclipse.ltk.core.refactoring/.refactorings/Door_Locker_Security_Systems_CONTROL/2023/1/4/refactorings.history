@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Door_Locker_Security_Systems_CONTROL/HELPERS&apos; to &apos;LIBRARIES&apos;" description="Rename resource &apos;HELPERS&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="HELPERS" name="LIBRARIES" stamp="1674928669793" updateReferences="true"/>
+</session>
