@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
- [FILE NAME]: buzzer.h
+ [FILE NAME]: Buzzer.h
 
  [AUTHOR]: Ebraheem Ali
 
@@ -13,16 +13,27 @@
 
 #ifndef HAL_BUZZER_H_
 #define HAL_BUZZER_H_
+
 #include "../../MCAL/GPIO/gpio.h"
+#include "Buzzer_Cfg.h"
 
-/*******************************************************************************
- *                                Definitions                                  *
- *******************************************************************************/
+typedef uint8 BuzzerIdType;
+typedef uint8 BuzzerPinType;
+typedef uint8 BuzzerPortType;
 
-#define BUZZER_PORT_ID	PORTB_ID
-#define BUZZER_PIN_ID	PIN0_ID
-#define BUZZER_ON	LOGIC_HIGH
-#define BUZZER_OFF	LOGIC_LOW
+typedef struct
+{
+	BuzzerIdType Bx_ID;
+	BuzzerPortType port;
+	BuzzerPinType pin;
+}BUZZER_ParamConfigStruct;
+
+typedef struct
+{
+	BUZZER_ParamConfigStruct B_Config[NUM_OF_BUZZERS];
+}BUZZER_ConfigType;
+
+extern const BUZZER_ConfigType	BuzzerConfig;
 
 
 /*******************************************************************************
@@ -35,7 +46,7 @@
  	 	 	 	-This function set the buzzer's port.
  [Return]: None
  ------------------------------------------------------------*/
-void BUZZER_init(void);
+void BUZZER_Init(const BUZZER_ConfigType *Config_Ptr);
 
 /*----------------------------------------------------------
  [Function Name]:BUZZER_init
@@ -43,7 +54,7 @@ void BUZZER_init(void);
  [Description]: --This function Turn on the buzzer.
  [Return]: None
  ------------------------------------------------------------*/
-void BUZZER_on(void);
+void BUZZER_On(const BUZZER_ConfigType *Config_Ptr,BuzzerIdType Bx_ID);
 
 /*----------------------------------------------------------
  [Function Name]:BUZZER_init
@@ -51,7 +62,7 @@ void BUZZER_on(void);
  [Description]: -This function Turn off the buzzer.
  [Return]: None
  ------------------------------------------------------------*/
-void BUZZER_off(void);
+void BUZZER_Off(const BUZZER_ConfigType *Config_Ptr,BuzzerIdType Bx_ID);
 
 
 #endif /* HAL_BUZZER_H_ */

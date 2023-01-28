@@ -1,4 +1,4 @@
-21:53:17 **** Build of configuration Debug for project Door_Locker_Security_Systems_CONTROL ****
+23:38:23 **** Incremental Build of configuration Debug for project Door_Locker_Security_Systems_CONTROL ****
 make all 
 Invoking: Print Size
 avr-size --format=avr --mcu=atmega16 Door_Locker_Security_Systems_CONTROL.elf
@@ -6,15 +6,15 @@ AVR Memory Usage
 ----------------
 Device: atmega16
 
-Program:   10526 bytes (64.2% Full)
+Program:   11278 bytes (68.8% Full)
 (.text + .data + .bootloader)
 
-Data:         59 bytes (5.8% Full)
+Data:         67 bytes (6.5% Full)
 (.data + .bss + .noinit)
 
 
 Finished building: sizedummy
  
 
-21:53:17 Build Finished. 0 errors, 0 warnings. (took 338ms)
+23:38:23 Build Finished. 0 errors, 0 warnings. (took 233ms)
 

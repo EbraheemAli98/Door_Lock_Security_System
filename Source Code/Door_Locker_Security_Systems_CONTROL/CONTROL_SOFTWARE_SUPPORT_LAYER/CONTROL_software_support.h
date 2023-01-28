@@ -34,7 +34,6 @@
 #define TIME_OF_DOOR_STOP	(3)   /* 3 sec */
 #define TIME_OF_DOOR_OPEN	(15)  /* 15 sec */
 #define TIME_OF_DOOR_CLOSE  (15)  /* 15 sec */
-#define TIME_OF_DOOR_ACTION (33)  /* 33 sec */
 
 #define OPEN_DOOR_OPTION ('+')
 #define CHANGE_PASSWORD_OPTION ('-')
@@ -68,7 +67,7 @@ extern volatile uint8 g_seconds;
  [Description]: Function to init EEPROM,DC-Motor,UART,TIMER and Buzzer.
  [Return]: None
  -----------------------------------------------------------------------------*/
-void CTRL_init(void);
+void CTRL_Init(void);
 /*----------------------------------------------------------------------------
  [Function Name]:CTRL_receiveACK
  [Arguments]: None

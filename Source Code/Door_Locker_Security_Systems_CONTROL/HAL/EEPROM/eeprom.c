@@ -13,7 +13,7 @@
 #include "../../MCAL/TWI/twi.h"
 #include "eeprom.h"
 
-void EEPROM_init(void)
+void EEPROM_Init(void)
 {
 	/* Initialize the TWI/I2C Driver */
 	TWI_configType config_Ptr;

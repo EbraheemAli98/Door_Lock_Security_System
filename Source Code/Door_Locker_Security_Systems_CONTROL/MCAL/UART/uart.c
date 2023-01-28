@@ -14,7 +14,7 @@
 #include "../../LIBRARIES/comman_macros.h"
 
 
-void UART_init(UART_ConfigType* uart_config)
+void UART_Init(UART_ConfigType* uart_config)
 {
 	uint16 ubrr_value = 0;
 	/****************** UCSRA Description ******************************
@@ -81,7 +81,7 @@ uint8 UART_receiveByte(void)
 	/* Read the unread data in the receive buffer register */
 	return UDR;
 }
-
+#if 0
 void UART_sendString(uint8 *Str)
 {
 	while(*Str != '\0')
@@ -109,3 +109,4 @@ void UART_receiveString(uint8* Str)
 	Str[i] = '\0';
 
 }
+#endif

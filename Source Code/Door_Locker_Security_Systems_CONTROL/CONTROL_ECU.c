@@ -36,7 +36,7 @@ int main(void)
 	 * 4. initiate the timer to Timer1, compare-mode, prescaler_1024,and set the initial and compare values.
 	 * 5. initiate the UART to baud-rate=9600, 8-bits data, one stop bit and no parity.
 	 **********************************************************************************************************/
-	CTRL_init();
+	CTRL_Init();
 	_delay_ms(10);
 
 	/* read the value of flag from memory */

@@ -16,10 +16,10 @@
  ***********************************************************************************************/
 #include "CONTROL_software_support.h"
 #include "../HAL/EEPROM/eeprom.h"
-#include "../HAL/DC_MOTOR/motor.h"
-#include "../HAL/BUZZER/buzzer.h"
 #include "../MCAL/GPT/Gpt.h"
 #include <util/delay.h>
+#include "../HAL/BUZZER/Buzzer.h"
+#include "../HAL/DC_MOTOR/Motor.h"
 
 /***********************************************************************************************
 							 	 	 Global Variables
@@ -34,7 +34,7 @@ uint8 g_confirmPassword_array[NUMBER_OF_DIGITS_IN_PASSWORD];
  ************************************************************************************************/
 
 /*==================================== CONTROL_init ===============================================*/
-void CTRL_init(void)
+void CTRL_Init(void)
 {
 	/*********************************************************************************************************
 	 * 1. initiate the EEPROM.
@@ -43,13 +43,13 @@ void CTRL_init(void)
 	 * 4. initiate the timer to Timer1, compare-mode, prescaler_1024,and set the initial and compare values.
 	 * 5. initiate the UART to baud-rate=9600, 8-bits data, one stop bit and no parity.
 	 **********************************************************************************************************/
-	EEPROM_init();
-	BUZZER_init();
-	MOTOR_init();
+	EEPROM_Init();
+	BUZZER_Init(&BuzzerConfig);
+	MOTOR_Init(&MotorConfig);
 	GPT_startTimer(T1);
 	GPT_T1_setCallBack(CTRL_callBack);
 	UART_ConfigType uart_configObj = {9600,EIGHT_BITS,DISABLE_PARITY,ONE_STOP_BIT};
-	UART_init(&uart_configObj);
+	UART_Init(&uart_configObj);
 	GPT_enableNotification(T1, OUTPUT_COMPARE);
 }
 /*======================================== HMI_receiveACK ==========================================*/
@@ -153,13 +153,13 @@ void CTRL_passwordInputOperation(void)
 void CTRL_doorAction(void)
 {
 	g_seconds = 0;
-	MOTOR_rotate(ROTATE_CW);
+	MOTOR_rotateCW(&MotorConfig,M0);
 	while(g_seconds < TIME_OF_DOOR_OPEN);
-	MOTOR_stop();
+	MOTOR_stop(&MotorConfig,M0);
 	while(g_seconds < (TIME_OF_DOOR_OPEN+TIME_OF_DOOR_STOP));
-	MOTOR_rotate(ROTATE_A_CW);
+	MOTOR_rotateACW(&MotorConfig,M0);
 	while(g_seconds < (TIME_OF_DOOR_OPEN+TIME_OF_DOOR_STOP+TIME_OF_DOOR_CLOSE));
-	MOTOR_stop();
+	MOTOR_stop(&MotorConfig,M0);
 
 }
 /*=================================== Door_callBack =============================================*/
@@ -171,9 +171,9 @@ void CTRL_callBack(void)
 void CTRL_alarmAction(void)
 {
 	g_seconds = 0;
-	BUZZER_on();
+	BUZZER_On(&BuzzerConfig,B0);
 	while(g_seconds < TIME_OF_ALARM);
-	BUZZER_off();
+	BUZZER_Off(&BuzzerConfig,B0);
 }
 /*================================= CONTROL_openDoorCheckPassword ================================*/
 void CTRL_openDoorWrongPassword(uint8 *a_NumberOfWrongPasswords)

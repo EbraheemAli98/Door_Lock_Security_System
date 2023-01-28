@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../HAL/DC_MOTOR/motor.c 
+../HAL/DC_MOTOR/Motor.c \
+../HAL/DC_MOTOR/Motor_Lcfg.c 
 
 OBJS += \
-./HAL/DC_MOTOR/motor.o 
+./HAL/DC_MOTOR/Motor.o \
+./HAL/DC_MOTOR/Motor_Lcfg.o 
 
 C_DEPS += \
-./HAL/DC_MOTOR/motor.d 
+./HAL/DC_MOTOR/Motor.d \
+./HAL/DC_MOTOR/Motor_Lcfg.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

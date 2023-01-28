@@ -78,7 +78,7 @@ typedef struct
  	 	 	 	4. set the type of parity bit (if u decided to use it).
  [Return]: None
  --------------------------------------------------------------------------*/
-void UART_init(UART_ConfigType* uart_config);
+void UART_Init(UART_ConfigType* uart_config);
 
 /*-------------------------------------------------------------------------
  [Function Name]:UART_sendByte

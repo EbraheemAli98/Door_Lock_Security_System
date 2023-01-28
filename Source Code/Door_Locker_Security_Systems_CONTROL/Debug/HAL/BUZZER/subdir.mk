@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../HAL/BUZZER/buzzer.c 
+../HAL/BUZZER/Buzzer.c \
+../HAL/BUZZER/Buzzer_Lcfg.c 
 
 OBJS += \
-./HAL/BUZZER/buzzer.o 
+./HAL/BUZZER/Buzzer.o \
+./HAL/BUZZER/Buzzer_Lcfg.o 
 
 C_DEPS += \
-./HAL/BUZZER/buzzer.d 
+./HAL/BUZZER/Buzzer.d \
+./HAL/BUZZER/Buzzer_Lcfg.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
